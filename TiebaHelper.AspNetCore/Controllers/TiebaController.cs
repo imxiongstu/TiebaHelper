@@ -1,21 +1,19 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Web.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Web;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace TiebaHelper.Controllers
+namespace TiebaHelper.AspNetCore.Controllers
 {
-    public class TiebaController : ApiController
+    [Route("api/[controller]/[action]")]
+    public class TiebaController : Controller
     {
-
         private static string url_main = "https://tieba.baidu.com/";
         private static string url_sign = "https://tieba.baidu.com/sign/add/";
         private static string url_tbs = "http://tieba.baidu.com/dc/common/tbs/";
@@ -98,7 +96,7 @@ namespace TiebaHelper.Controllers
         /// <param name="sign"></param>
         /// <returns></returns>
         [HttpGet]
-        public JObject CheckScanIsSuccess(string sign)
+        public object CheckScanIsSuccess(string sign)
         {
             string url_checkscan = $"https://passport.baidu.com/channel/unicast?channel_id={sign}&callback=tangram_guid_1593274789639";
             JObject ScanEndJson = new JObject();
@@ -122,7 +120,13 @@ namespace TiebaHelper.Controllers
                 string stoken = (string)endJson["data"]["session"]["stokenList"];
                 Match re = Regex.Match(stoken, @"(?<=\[&quot;tb#)[\s\S]*?(?=&quot)");
                 stoken = re.ToString();
-                return new JObject() { { "username", username }, { "bduss", bduss }, { "stoken", stoken } };
+                //  return new JObject() { { "username", username }, { "bduss", bduss }, { "stoken", stoken } };
+                return new
+                {
+                    username = username,
+                    bduss = bduss,
+                    stoken = stoken
+                };
             }
             else
             {
@@ -147,4 +151,3 @@ namespace TiebaHelper.Controllers
         }
     }
 }
-
